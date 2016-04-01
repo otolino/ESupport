@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">ESupport</string>
+    <string name="action_settings">Settings</string>
+
+    <!--Permanent Settings-->
+    <string name="title_activity_settings">Settings</string>
+    <string name="pref_AssetStatus_title">Estado</string>
+    <string name="pref_AssetStatus_key">assetStatus</string>
+    <string name="pref_AssetIMEI_title">IMEI</string>
+    <string name="pref_AssetIMEI_key">assetIMEI</string>
+    <string name="disponible">Disponible</string>
+    <string name="ocupado">Ocupado</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">esupport.brainupco.com</string>
+    <string name="content_authority">com.brainupco.esupport</string>
+
+</resources>
