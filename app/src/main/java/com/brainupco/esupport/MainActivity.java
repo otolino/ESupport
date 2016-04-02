@@ -12,9 +12,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity {
+
+    public final String LOG_TAG = MainActivity.class.getSimpleName();
 
     // Settings
     String mAssetStatus;
@@ -42,20 +43,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mIMEI = null; //Utility.getSavedAssetIMEI(this);
         if (mIMEI == null || mIMEI == "") {
             // Try to read Device IMEI
-            mIMEI = "359837050577255"; //Utility.getDeviceIMEI(this);
+            mIMEI = Utility.getDeviceIMEI(this);
 
             // Save Value
             Utility.setAssetIMEI(this, mIMEI);
         }
 
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
+        new MobileLocationWS().execute();
+
+
+//        // Create an instance of GoogleAPIClient.
+//        if (mGoogleApiClient == null) {
+//            mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .addApi(LocationServices.API)
+//                    .build();
+//        }
 
     }
 
@@ -123,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         assetStatus.setText(statusToSet);
 
         // Set Image
-        if (statusToSet == getString(R.string.disponible)) {
+        if (statusToSet == (String) getString(R.string.disponible)) {
             ib.setImageResource(R.drawable.disponible);
         } else {
             ib.setImageResource(R.drawable.ocupado);

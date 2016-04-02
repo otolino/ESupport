@@ -5,7 +5,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
+import android.util.Xml;
 
+import org.xmlpull.v1.XmlSerializer;
+
+import java.io.IOException;
+import java.io.StringWriter;
 /**
  * Created by jsantos on 29/mar/2016.
  */
@@ -57,4 +62,35 @@ public class Utility {
         return time.setJulianDay(julianDay);
     }
 
+    @SuppressWarnings("null")
+    public static String CreateUpdateLocationXMLString() throws IllegalArgumentException, IllegalStateException, IOException
+    {
+        XmlSerializer xmlSerializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+
+        xmlSerializer.setOutput(writer);
+
+        //Start Document
+        xmlSerializer.startDocument("UTF-8", true);
+        xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+
+        //Open Tag <file>
+        xmlSerializer.startTag("", "soap:Envelope");
+
+        xmlSerializer.startTag("", "something");
+        xmlSerializer.attribute("", "ID", "000001");
+
+        xmlSerializer.startTag("", "name");
+        xmlSerializer.text("CO");
+        xmlSerializer.endTag("", "name");
+
+        xmlSerializer.endTag("", "something");
+
+
+        //end tag <file>
+        xmlSerializer.endTag("", "soap:Envelope");
+        xmlSerializer.endDocument();
+
+        return writer.toString();
+    }
 }
