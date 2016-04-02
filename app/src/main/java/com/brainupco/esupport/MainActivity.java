@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         assetStatus.setText(statusToSet);
 
         // Set Image
-        if (statusToSet == (String) getString(R.string.disponible)) {
+        if (statusToSet.equalsIgnoreCase(getString(R.string.disponible))) {
             ib.setImageResource(R.drawable.disponible);
         } else {
             ib.setImageResource(R.drawable.ocupado);

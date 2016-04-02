@@ -34,5 +34,6 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile 'com.google.android.gms:play-services-location:8.4.0'
     // para jitpack usar en dependencies: compile 'com.github.User:Repo:Tag'
+//    compile 'com.squareup.retrofit2:retrofit:2.0.1'
     //compile 'com.github.simpligility.ksoap2-android:build-tools:3.5.0'
 }

@@ -49,7 +49,8 @@ public class MobileLocationWS extends AsyncTask {
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
             final String WS_BASE_URL =
-                    "http://web-mobilelocation.azurewebsites.net/services/UpdateLocation";
+//                    "http://busservices.azurewebsites.net/Service/TicketService.svc/UpdateUserEstatus";
+                    "http://busservices.azurewebsites.net/Service/TicketService.svc";
             final String UPDATE_LOCATION_PATH = "/services/LocationServices.asmx";
 
             Uri builtSOAPUri = Uri.parse(WS_BASE_URL)
@@ -65,18 +66,20 @@ public class MobileLocationWS extends AsyncTask {
             urlConnection = (HttpURLConnection) url.openConnection();
 
             // Create XML Soap Envelope
-            StringBuilder soapEnvelope = new StringBuilder("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                    "  <s:Header>\n" +
-                    "    <Action s:mustUnderstand=\"1\" xmlns=\"http://schemas.microsoft.com/ws/2005/05/addressing/none\">http://web-mobilelocation.azurewebsites.net/services/UpdateLocation</Action>\n" +
-                    "  </s:Header>\n" +
-                    "  <s:Body>\n" +
-                    "    <UpdateLocation xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://web-mobilelocation.azurewebsites.net/services\">\n" +
-                    "      <imei>868442014378892</imei>\n" +
-                    "      <lat>19.4984418</lat>\n" +
-                    "      <lon>-99.16917079999999</lon>\n" +
-                    "    </UpdateLocation>\n" +
-                    "  </s:Body>\n" +
-                    "</s:Envelope>");
+            StringBuilder soapEnvelope = new StringBuilder("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+                    .append("<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
+                            "  <s:Header>\n" +
+                            "    <Action s:mustUnderstand=\"1\" xmlns=\"http://schemas.microsoft.com/ws/2005/05/addressing/none\">http://tempuri.org/ITicketService/UpdateMobilePhoneEstatus</Action>\n" +
+                            "  </s:Header>\n" +
+                            "  <s:Body>\n" +
+                            "    <UpdateMobilePhoneEstatus xmlns=\"http://tempuri.org/\">\n" +
+                            "      <IMEI>868442014378892</IMEI>\n" +
+                            "      <Status>Activo Libre</Status>\n" +
+                            "      <Latitud>19.4984899</Latitud>\n" +
+                            "      <Longitud>-99.1692977</Longitud>\n" +
+                            "    </UpdateMobilePhoneEstatus>\n" +
+                            "  </s:Body>\n" +
+                            "</s:Envelope>");
 
 //            soapEnvelope.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>").append("\n")
 //                    .append("<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">").append("\n")
@@ -104,12 +107,13 @@ public class MobileLocationWS extends AsyncTask {
 //            urlConnection.addRequestProperty("imei", IMEI);
 //            urlConnection.addRequestProperty("lat", Double.toString(longitude));
 //            urlConnection.addRequestProperty("lon", Double.toString(latitude));
+            urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
 //            urlConnection.addRequestProperty("Connection", "keep-alive");
 //            urlConnection.addRequestProperty("SendChunked", "True");
             urlConnection.addRequestProperty("Content-Type", "text/xml");
             urlConnection.addRequestProperty("Content-Length", String.valueOf(soapEnvelope.length()));
-            urlConnection.addRequestProperty("SOAPAction", "http://web-mobilelocation.azurewebsites.net/Services/LocatorService.asmx");
+            urlConnection.addRequestProperty("Action", "http://tempuri.org/ITicketService/UpdateMobilePhoneEstatus");
             //urlConnection.connect();
 
             // request data in soap format
@@ -124,7 +128,7 @@ public class MobileLocationWS extends AsyncTask {
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
             String line;
-            while ( (line = br.readLine()) != null)
+            while ((line = br.readLine()) != null)
                 responseSB.append(line);
 
             // Close streams
