@@ -1,5 +1,8 @@
 package com.brainupco.esupport;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -11,7 +14,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.brainupco.esupport.service.ESupportService;
+import com.brainupco.esupport.service.AlarmReceiver;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,15 +57,15 @@ public class MainActivity extends AppCompatActivity {
             Utility.setAssetIMEI(this, mIMEI);
         }
 
-//        // Set Alarm to send Location Updates
-//        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-//        PendingIntent pi = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-//        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-//        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + START_DELAY, UPDATE_INTERVAL, pi);
+        // Set Alarm to send Location Updates
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + START_DELAY, UPDATE_INTERVAL, pi);
 
-        // start the service
-        Intent tracking = new Intent(this, ESupportService.class);
-        this.startService(tracking);
+//        // start the service
+//        Intent tracking = new Intent(this, ESupportService.class);
+//        this.startService(tracking);
 
 
 //        // Create an instance of GoogleAPIClient.

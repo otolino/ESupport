@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.brainupco.esupport.R;
 import com.brainupco.esupport.Utility;
 
 import java.io.IOException;
@@ -34,13 +35,15 @@ public class ESupportService extends IntentService implements LocationListener {
     public void onCreate() {
         super.onCreate();
 
-        try{
-            LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            String best = lm.getBestProvider(criteria, true);
-            lm.requestLocationUpdates(best, 5 * 60 * 1000, 100, this);
-        }
-        catch (SecurityException e){
+        try {
+            // Check if has to request for location
+            if (Utility.inServicewindow(this)) {
+                LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+                Criteria criteria = new Criteria();
+                String best = lm.getBestProvider(criteria, true);
+                lm.requestLocationUpdates(best, 5 * 60 * 1000, 100, this);
+            }
+        } catch (SecurityException e) {
 
         }
     }
@@ -60,15 +63,19 @@ public class ESupportService extends IntentService implements LocationListener {
 
     }
 
+//    @Override
+//    protected void onHandleIntent(Intent intent) {
+//    }
+
     @Override
     public void onLocationChanged(Location currentLocation) {
-        if (currentLocation != null){
+        if (currentLocation != null) {
             // Get Current Location Values
             String assetLatitude = Double.toString(currentLocation.getLatitude());
             String assetLongitude = Double.toString(currentLocation.getLongitude());
 
             // Save Current Location Values
-            Utility.setAssetLatitude(this,assetLatitude);
+            Utility.setAssetLatitude(this, assetLatitude);
             Utility.setAssetLongitude(this, assetLongitude);
         }
 
@@ -76,24 +83,53 @@ public class ESupportService extends IntentService implements LocationListener {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
+
+        // Assume it doesn't has to run
+        Boolean updateLocation = false;
+
+        // Get Saved Values
+        String assetIMEI = Utility.getSavedAssetIMEI(this);
+        String assetStatus = Utility.getSavedAssetStatus(this);
+        String assetLatitude = Utility.getSavedAssetLatitude(this);
+        String assetLongitude = Utility.getSavedAssetLongitude(this);
+
+
+        // Check if has to run
+        if (Utility.inServicewindow(this)) {
+            // Is in service windows, check if status is correct
+            if (assetStatus.equalsIgnoreCase(getString(R.string.inactivo))) {
+                // Set Status to Available
+                assetStatus = getString(R.string.disponible);
+                Utility.setAssetStatus(this, assetStatus);
+            }
+
+            // Must run
+            updateLocation = true;
+
+        } else {
+            // Not in service windows, check if has to inactivate
+            if (!assetStatus.equalsIgnoreCase(getString(R.string.inactivo))) {
+                // Set Status to Inactive and notify it
+                assetStatus = getString(R.string.inactivo);
+                Utility.setAssetStatus(this, assetStatus);
+
+                // Must run to notify
+                updateLocation = true;
+            }
+        }
+
+        // If no Location info, cancel request
+        if (assetLatitude == "" || assetLatitude == "0") {
+            updateLocation = false;
+        }
+
+        if (updateLocation) {
 
             // Execut only if its in Service Window
             Log.v(LOG_TAG, "Sending Location");
 
-            // Get Saved Values
-            String assetIMEI = Utility.getSavedAssetIMEI(this);
-            String assetStatus = Utility.getWSStatus(this);
-            String assetLatitude = Utility.getSavedAssetLatitude(this);
-            String assetLongitude = Utility.getSavedAssetLongitude(this);
 //            String assetLatitude = "19.4984899";
 //            String assetLongitude = "-99.1692977";
-
-            // If no Location info, cancel request
-            if (assetLatitude == "" || assetLatitude == "0")
-            {
-                return;
-            }
 
             // Use URl Connection to Call Web Service
             HttpURLConnection urlConnection = null;
@@ -129,7 +165,7 @@ public class ESupportService extends IntentService implements LocationListener {
 
                 Uri builtUri = Uri.parse(Mobile_Location_BASE_URL).buildUpon()
                         .appendQueryParameter(IMEI_PARAM, assetIMEI)
-                        .appendQueryParameter(STATUS_PARAM, assetStatus)
+                        .appendQueryParameter(STATUS_PARAM, Utility.getWSStatus(this))
                         .appendQueryParameter(LAT_PARAM, assetLatitude)
                         .appendQueryParameter(LON_PARAM, assetLongitude)
                         .build();

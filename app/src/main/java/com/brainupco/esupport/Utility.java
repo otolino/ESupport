@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by jsantos on 29/mar/2016.
@@ -137,8 +138,8 @@ public class Utility {
 
         try {
             // Get Current Time
-            Calendar now = Calendar.getInstance();
-            int hour = now.get(Calendar.HOUR);
+            Calendar now = Calendar.getInstance(TimeZone.getDefault());
+            int hour = now.get(Calendar.HOUR_OF_DAY);
             int minute = now.get(Calendar.MINUTE);
             Date currentTime = sdf.parse(hour + ":" + minute);
 
