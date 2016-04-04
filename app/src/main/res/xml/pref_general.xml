@@ -7,16 +7,48 @@
         android:defaultValue=""
         android:enabled="false"
         android:inputType="text"
-        android:key="@string/pref_AssetIMEI_key"
+        android:key="@string/pref_Asset_IMEI_key"
         android:singleLine="true"
-        android:title="@string/pref_AssetIMEI_title" />
+        android:title="@string/pref_Asset_IMEI_title" />
+
+    <EditTextPreference
+        android:defaultValue="0"
+        android:enabled="false"
+        android:inputType="text"
+        android:key="@string/pref_Asset_Latitude_key"
+        android:singleLine="true"
+        android:title="@string/pref_Asset_Latitude_title" />
+
+    <EditTextPreference
+        android:defaultValue="0"
+        android:enabled="false"
+        android:inputType="text"
+        android:key="@string/pref_Asset_Longitude_key"
+        android:singleLine="true"
+        android:title="@string/pref_Asset_Longitude_title" />
 
     <EditTextPreference
         android:defaultValue="@string/disponible"
         android:enabled="false"
         android:inputType="text"
-        android:key="@string/pref_AssetStatus_key"
+        android:key="@string/pref_Asset_Status_key"
         android:singleLine="true"
-        android:title="@string/pref_AssetStatus_title" />
+        android:title="@string/pref_Asset_Status_title" />
+
+    <EditTextPreference
+        android:defaultValue="8:00"
+        android:enabled="false"
+        android:inputType="text"
+        android:key="@string/pref_Asset_Start_Time_key"
+        android:singleLine="true"
+        android:title="@string/pref_Asset_Start_Time_title" />
+
+    <EditTextPreference
+        android:defaultValue="19:00"
+        android:enabled="false"
+        android:inputType="text"
+        android:key="@string/pref_Asset_End_Time_key"
+        android:singleLine="true"
+        android:title="@string/pref_Asset_End_Time_title" />
 
 </PreferenceScreen>

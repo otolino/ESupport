@@ -11,11 +11,16 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.brainupco.esupport.service.ESupportService;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 public class MainActivity extends AppCompatActivity {
 
     public final String LOG_TAG = MainActivity.class.getSimpleName();
+
+    // Alarm Constants
+    public final long UPDATE_INTERVAL = 5 * 60 * 1000; // Milliseconds
+    private final int START_DELAY = 5000; // Seconds
 
     // Settings
     String mAssetStatus;
@@ -49,7 +54,15 @@ public class MainActivity extends AppCompatActivity {
             Utility.setAssetIMEI(this, mIMEI);
         }
 
-        new MobileLocationWS().execute();
+//        // Set Alarm to send Location Updates
+//        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+//        PendingIntent pi = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+//        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+//        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + START_DELAY, UPDATE_INTERVAL, pi);
+
+        // start the service
+        Intent tracking = new Intent(this, ESupportService.class);
+        this.startService(tracking);
 
 
 //        // Create an instance of GoogleAPIClient.
@@ -69,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Set initial or last saved status
         setAssetStatus(Utility.getSavedAssetStatus(this));
+
+        // Report New Status
+        //Utility.sendLocation(this);
     }
 
 
@@ -109,12 +125,15 @@ public class MainActivity extends AppCompatActivity {
 
     // Set Button Action
     public void changeAssetStatus(View view) {
-        // Toggle status
-        if (mAssetStatus == getString(R.string.disponible)) {
+        // Toggle status (inactivo, do nothing)
+        if (mAssetStatus.equalsIgnoreCase(getString(R.string.disponible))) {
             setAssetStatus(getString(R.string.ocupado));
-        } else {
+        } else if (mAssetStatus.equalsIgnoreCase(getString(R.string.ocupado))) {
             setAssetStatus(getString(R.string.disponible));
         }
+
+        // Report New Status
+        //Utility.sendLocation(this);
     }
 
     private void setAssetStatus(String statusToSet) {
@@ -127,8 +146,10 @@ public class MainActivity extends AppCompatActivity {
         assetStatus.setText(statusToSet);
 
         // Set Image
-        if (statusToSet == (String) getString(R.string.disponible)) {
+        if (statusToSet.equalsIgnoreCase(getString(R.string.disponible))) {
             ib.setImageResource(R.drawable.disponible);
+        } else if (statusToSet.equalsIgnoreCase(getString(R.string.inactivo))) {
+            ib.setImageResource(R.drawable.inactivo);
         } else {
             ib.setImageResource(R.drawable.ocupado);
 

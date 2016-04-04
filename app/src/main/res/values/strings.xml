@@ -4,12 +4,21 @@
 
     <!--Permanent Settings-->
     <string name="title_activity_settings">Settings</string>
-    <string name="pref_AssetStatus_title">Estado</string>
-    <string name="pref_AssetStatus_key">assetStatus</string>
-    <string name="pref_AssetIMEI_title">IMEI</string>
-    <string name="pref_AssetIMEI_key">assetIMEI</string>
+    <string name="pref_Asset_Status_title">Estado</string>
+    <string name="pref_Asset_Status_key">assetStatus</string>
+    <string name="pref_Asset_IMEI_title">IMEI</string>
+    <string name="pref_Asset_IMEI_key">assetIMEI</string>
+    <string name="pref_Asset_Latitude_title">Latitud</string>
+    <string name="pref_Asset_Latitude_key">assetLatitude</string>
+    <string name="pref_Asset_Longitude_title">Longitud</string>
+    <string name="pref_Asset_Longitude_key">assetLongitude</string>
+    <string name="pref_Asset_Start_Time_title">Hora de Inicio</string>
+    <string name="pref_Asset_Start_Time_key">assetStartTime</string>
+    <string name="pref_Asset_End_Time_title">Hora Final</string>
+    <string name="pref_Asset_End_Time_key">assetEndTime</string>
     <string name="disponible">Disponible</string>
     <string name="ocupado">Ocupado</string>
+    <string name="inactivo">Inactivo</string>
 
     <!-- SyncAdapter related -->
     <string name="sync_account_type">esupport.brainupco.com</string>

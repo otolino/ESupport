@@ -4,47 +4,104 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
-import android.text.format.Time;
-import android.util.Xml;
 
-import org.xmlpull.v1.XmlSerializer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
-import java.io.IOException;
-import java.io.StringWriter;
 /**
  * Created by jsantos on 29/mar/2016.
  */
 public class Utility {
 
+    // Status
     public static String getSavedAssetStatus(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(context.getString(R.string.pref_AssetStatus_key),
+        return prefs.getString(context.getString(R.string.pref_Asset_Status_key),
                 context.getString(R.string.disponible));
     }
 
-    public static void setAssetStatus(Context context, String newValue){
+    public static void setAssetStatus(Context context, String newValue) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(context.getString(R.string.pref_AssetStatus_key), newValue);
+        editor.putString(context.getString(R.string.pref_Asset_Status_key), newValue);
         editor.commit();
     }
 
+    // IMEI
     public static String getSavedAssetIMEI(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(context.getString(R.string.pref_AssetIMEI_key),
+        return prefs.getString(context.getString(R.string.pref_Asset_IMEI_key),
                 "");
     }
 
-    public static void setAssetIMEI(Context context, String newValue){
+    public static void setAssetIMEI(Context context, String newValue) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(context.getString(R.string.pref_AssetIMEI_key), newValue);
+        editor.putString(context.getString(R.string.pref_Asset_IMEI_key), newValue);
         editor.commit();
     }
 
-    public static String getDeviceIMEI(Context context){
+    // Latitude
+    public static String getSavedAssetLatitude(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_Asset_Latitude_key),
+                "");
+    }
+
+    public static void setAssetLatitude(Context context, String newValue) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(context.getString(R.string.pref_Asset_Latitude_key), newValue);
+        editor.commit();
+    }
+
+    // Longitude
+    public static String getSavedAssetLongitude(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_Asset_Longitude_key),
+                "");
+    }
+
+    public static void setAssetLongitude(Context context, String newValue) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(context.getString(R.string.pref_Asset_Longitude_key), newValue);
+        editor.commit();
+    }
+
+    // Start Time
+    public static String getSavedAssetStartTime(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_Asset_Start_Time_key),
+                "");
+    }
+
+    public static void setAssetStartTime(Context context, String newValue) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(context.getString(R.string.pref_Asset_Start_Time_key), newValue);
+        editor.commit();
+    }
+
+    // End Time
+    public static String getSavedAssetEndTime(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_Asset_End_Time_key),
+                "");
+    }
+
+    public static void setAssetEndTime(Context context, String newValue) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(context.getString(R.string.pref_Asset_End_Time_key), newValue);
+        editor.commit();
+    }
+
+    public static String getDeviceIMEI(Context context) {
         // (testphone: 868442014378892)
-        TelephonyManager telephonyManager = (TelephonyManager)  context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String devID = telephonyManager.getDeviceId();
         //String andID = System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -52,45 +109,57 @@ public class Utility {
         return devID;
     }
 
-    // To make it easy to query for the exact date, we normalize all dates that go into
-    // the database to the start of the the Julian day at UTC.
-    public static long normalizeDate(long startDate) {
-        // normalize the start date to the beginning of the (UTC) day
-        Time time = new Time();
-        time.set(startDate);
-        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
-        return time.setJulianDay(julianDay);
+    public static String getWSStatus(Context context) {
+
+        // Assume Status eq WS Status
+        String assetStatus = getSavedAssetStatus(context);
+        String wsStatus = assetStatus;
+
+        // Map Statuses
+        if (assetStatus.equalsIgnoreCase(context.getString(R.string.disponible))) {
+            wsStatus = "Activo Libre";
+        } else if (assetStatus.equalsIgnoreCase(context.getString(R.string.ocupado))) {
+            wsStatus = "Atendiendo";
+        }
+
+        return wsStatus;
     }
 
-    @SuppressWarnings("null")
-    public static String CreateUpdateLocationXMLString() throws IllegalArgumentException, IllegalStateException, IOException
-    {
-        XmlSerializer xmlSerializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
+    public static Boolean inServicewindow(Context context) {
 
-        xmlSerializer.setOutput(writer);
+        Boolean inWindow = false;
+        String pattern = "HH:mm";
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern);
 
-        //Start Document
-        xmlSerializer.startDocument("UTF-8", true);
-        xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+        // Get Service Window
+        String startTime = getSavedAssetStartTime(context);
+        String endTime = getSavedAssetEndTime(context);
 
-        //Open Tag <file>
-        xmlSerializer.startTag("", "soap:Envelope");
+        try {
+            // Get Current Time
+            Calendar now = Calendar.getInstance();
+            int hour = now.get(Calendar.HOUR);
+            int minute = now.get(Calendar.MINUTE);
+            Date currentTime = sdf.parse(hour + ":" + minute);
 
-        xmlSerializer.startTag("", "something");
-        xmlSerializer.attribute("", "ID", "000001");
+            // Get Window Service
+            Date start = sdf.parse(startTime);
+            Date end = sdf.parse(endTime);
 
-        xmlSerializer.startTag("", "name");
-        xmlSerializer.text("CO");
-        xmlSerializer.endTag("", "name");
+            // Check if in service window
+            inWindow = ( start.compareTo(currentTime) <=0 && end.compareTo(currentTime) >= 0 && now.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY );
 
-        xmlSerializer.endTag("", "something");
-
-
-        //end tag <file>
-        xmlSerializer.endTag("", "soap:Envelope");
-        xmlSerializer.endDocument();
-
-        return writer.toString();
+        } catch (ParseException e) {
+            // Exception handling goes here
+        }
+        return inWindow;
     }
+
+//    public static void sendLocation(Context context){
+//        // Call Service Using an Intent
+//        Intent intent = new Intent(context, ESupportService.class);
+//        context.startService(intent);
+//    }
+
+
 }
