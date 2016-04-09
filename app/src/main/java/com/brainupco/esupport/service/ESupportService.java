@@ -26,6 +26,8 @@ import java.net.URL;
 public class ESupportService extends IntentService implements LocationListener {
 
     public final String LOG_TAG = ESupportService.class.getSimpleName();
+    LocationManager lm;
+    String best;
 
     public ESupportService() {
         super("ESupportService");
@@ -36,12 +38,13 @@ public class ESupportService extends IntentService implements LocationListener {
         super.onCreate();
 
         try {
+            lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            best = lm.getBestProvider(criteria, true);
+
             // Check if has to request for location
             if (Utility.inServicewindow(this)) {
-                LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-                Criteria criteria = new Criteria();
-                String best = lm.getBestProvider(criteria, true);
-                lm.requestLocationUpdates(best, 5 * 60 * 1000, 100, this);
+                lm.requestLocationUpdates(best, this.getResources().getInteger(R.integer.ALARM_UPDATE_INTERVAL), 100, this);
             }
         } catch (SecurityException e) {
 
@@ -69,20 +72,25 @@ public class ESupportService extends IntentService implements LocationListener {
 
     @Override
     public void onLocationChanged(Location currentLocation) {
-        if (currentLocation != null) {
-            // Get Current Location Values
-            String assetLatitude = Double.toString(currentLocation.getLatitude());
-            String assetLongitude = Double.toString(currentLocation.getLongitude());
-
-            // Save Current Location Values
-            Utility.setAssetLatitude(this, assetLatitude);
-            Utility.setAssetLongitude(this, assetLongitude);
-        }
+//        if (currentLocation != null) {
+//            // Get Current Location Values
+//            String assetLatitude = Double.toString(currentLocation.getLatitude());
+//            String assetLongitude = Double.toString(currentLocation.getLongitude());
+//
+//            // Save Current Location Values
+//            Utility.setAssetLatitude(this, assetLatitude);
+//            Utility.setAssetLongitude(this, assetLongitude);
+//
+//        }
 
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        updateLocation();
+    }
+
+    private void updateLocation() {
 
         // Assume it doesn't has to run
         Boolean updateLocation = false;
@@ -101,6 +109,7 @@ public class ESupportService extends IntentService implements LocationListener {
                 // Set Status to Available
                 assetStatus = getString(R.string.disponible);
                 Utility.setAssetStatus(this, assetStatus);
+
             }
 
             // Must run
@@ -118,10 +127,10 @@ public class ESupportService extends IntentService implements LocationListener {
             }
         }
 
-        // If no Location info, cancel request
-        if (assetLatitude == "" || assetLatitude == "0") {
-            updateLocation = false;
-        }
+//        // If no Location info, cancel request
+//        if (assetLatitude == "" || assetLatitude == "0") {
+//            updateLocation = false;
+//        }
 
         if (updateLocation) {
 
@@ -136,23 +145,23 @@ public class ESupportService extends IntentService implements LocationListener {
 
             try {
 
-//                // Get Location
+                // Try to Get Last Know Location
 //                LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 //                Criteria criteria = new Criteria();
 //                String best = lm.getBestProvider(criteria, true);
-//                Location currentLocation = lm.getLastKnownLocation(best);
-//
-//                // Set values if location found
-//                // If not found it will send the las saved location
-//                if (currentLocation != null){
-//                    // Get Current Location Values
-//                    assetLatitude = Double.toString(currentLocation.getLatitude());
-//                    assetLongitude = Double.toString(currentLocation.getLongitude());
-//
-//                    // Save Current Location Values
-//                    Utility.setAssetLatitude(this,assetLatitude);
-//                    Utility.setAssetLongitude(this, assetLongitude);
-//                }
+                Location currentLocation = lm.getLastKnownLocation(best);
+
+                // Set values if location found
+                // If not found it will send the las saved location
+                if (currentLocation != null) {
+                    // Get Current Location Values
+                    assetLatitude = Double.toString(currentLocation.getLatitude());
+                    assetLongitude = Double.toString(currentLocation.getLongitude());
+
+                    // Save Current Location Values
+                    Utility.setAssetLatitude(this, assetLatitude);
+                    Utility.setAssetLongitude(this, assetLongitude);
+                }
 
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
@@ -180,18 +189,20 @@ public class ESupportService extends IntentService implements LocationListener {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return;
-                }
+//                if (inputStream == null) {
+//                    // Nothing to do.
+//                    return;
+//                }
 
                 // for now, we just ignore response
                 // DO NOTHING
 
             } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "Error->IOException: ", e);
             } catch (SecurityException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, "Error->SecurityException: ", e);
+            } catch (IllegalArgumentException e) {
+                Log.e(LOG_TAG, "Error->IllegalArgumentException: ", e);
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -200,4 +211,9 @@ public class ESupportService extends IntentService implements LocationListener {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v(LOG_TAG, ">>>OnDestroy()");
+    }
 }
