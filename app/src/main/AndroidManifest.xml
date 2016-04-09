@@ -45,12 +45,6 @@
                 android:value="com.brainupco.esupport.MainActivity" />
         </activity>
 
-        <provider
-            android:name=".data.ESupportProvider"
-            android:authorities="@string/content_authority"
-            android:exported="false"
-            android:syncable="true" />
-
         <service
             android:name=".service.ESupportService"
             android:exported="false" />
