@@ -148,7 +148,7 @@ public class Utility {
             Date end = sdf.parse(endTime);
 
             // Check if in service window
-            inWindow = ( start.compareTo(currentTime) <=0 && end.compareTo(currentTime) >= 0 && now.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY );
+            inWindow = ( start.compareTo(currentTime) <=0 && end.compareTo(currentTime) >= 0 && now.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY );
 
         } catch (ParseException e) {
             // Exception handling goes here

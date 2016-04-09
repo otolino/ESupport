@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Values in Millisecs (5 * 60 * 1000 = 300,000) (0.5 * 60 * 1000 = 30,000)-->
+    <integer name="ALARM_UPDATE_INTERVAL" type="integer">300000</integer>
+    <!--Values in Millisecs -->
+    <integer name="ALARM_START_DELAY" type="integer">5000</integer>
+</resources>

@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,10 +21,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 public class MainActivity extends AppCompatActivity {
 
     public final String LOG_TAG = MainActivity.class.getSimpleName();
-
-    // Alarm Constants
-    public final long UPDATE_INTERVAL = 5 * 60 * 1000; // Milliseconds
-    private final int START_DELAY = 5000; // Seconds
 
     // Settings
     String mAssetStatus;
@@ -47,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         actionbar.setDisplayShowHomeEnabled(true);
         actionbar.setIcon(R.drawable.ic_launcher);
 
+        // Ensure Applying Preferences Default (Only first time)
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+
         // Check if IMEI is in preferences (testphone: 868442014378892)
         mIMEI = null; //Utility.getSavedAssetIMEI(this);
         if (mIMEI == null || mIMEI == "") {
@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + START_DELAY, UPDATE_INTERVAL, pi);
+        int MyInt1 = R.integer.ALARM_START_DELAY;
+        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + this.getResources().getInteger(R.integer.ALARM_START_DELAY), this.getResources().getInteger(R.integer.ALARM_UPDATE_INTERVAL), pi);
 
 //        // start the service
 //        Intent tracking = new Intent(this, ESupportService.class);
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         //Utility.sendLocation(this);
     }
 
-    private void setAssetStatus(String statusToSet) {
+    public void setAssetStatus(String statusToSet) {
         // Change Text and Image to Reflect Asset Status
         ImageButton ib = (ImageButton) findViewById(R.id.btnAssetStatus);
         TextView assetStatus = (TextView) findViewById(R.id.assetStatus);
