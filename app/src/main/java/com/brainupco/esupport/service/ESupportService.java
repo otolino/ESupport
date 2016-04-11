@@ -72,16 +72,16 @@ public class ESupportService extends IntentService implements LocationListener {
 
     @Override
     public void onLocationChanged(Location currentLocation) {
-//        if (currentLocation != null) {
-//            // Get Current Location Values
-//            String assetLatitude = Double.toString(currentLocation.getLatitude());
-//            String assetLongitude = Double.toString(currentLocation.getLongitude());
-//
-//            // Save Current Location Values
-//            Utility.setAssetLatitude(this, assetLatitude);
-//            Utility.setAssetLongitude(this, assetLongitude);
-//
-//        }
+        if (currentLocation != null) {
+            // Get Current Location Values
+            String assetLatitude = Double.toString(currentLocation.getLatitude());
+            String assetLongitude = Double.toString(currentLocation.getLongitude());
+
+            // Save Current Location Values
+            Utility.setAssetLatitude(this, assetLatitude);
+            Utility.setAssetLongitude(this, assetLongitude);
+
+        }
 
     }
 
