@@ -36,7 +36,7 @@
         android:title="@string/pref_Asset_Status_title" />
 
     <EditTextPreference
-        android:defaultValue="8:00"
+        android:defaultValue="7:00"
         android:enabled="false"
         android:inputType="text"
         android:key="@string/pref_Asset_Start_Time_key"

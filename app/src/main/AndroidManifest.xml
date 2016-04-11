@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.brainupco.esupport">
+    package="com.brainupco.esupport"
+    android:versionCode="1"
+    android:versionName="1.0">
 
     <!-- This permission is necessary in order to perform network access. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -52,8 +54,7 @@
         <receiver
             android:name=".service.AlarmReceiver"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:exported="true"></receiver>
 
         <receiver
             android:name=".service.BootReceiver"
